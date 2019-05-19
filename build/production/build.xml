@@ -2,7 +2,7 @@
 
 <project name="php3" default="build" basedir=".">
 
-    <target name="build" depends="vars, copy, configs, composer, switch"/>
+    <target name="build" depends="vars, copy, configs, composer, migrations, switch"/>
 
     <target name="vars">
         <php returnProperty="current.time" function="date">
@@ -26,6 +26,10 @@
             <filterchain>
                 <replacetokens begintoken="{{" endtoken="}}">
                     <token key="domain" value="${domain}"/>
+                    <token key="db_username" value="${db.username}"/>
+                    <token key="db_password" value="${db.password}"/>
+                    <token key="admin_email" value="${admin.email}"/>
+                    <token key="admin_password" value="${admin.password}"/>
                 </replacetokens>
             </filterchain>
         </copy>
@@ -33,6 +37,10 @@
 
     <target name="composer">
         <exec command="composer install" dir="${current.dir}" passthru="true"/>
+    </target>
+
+    <target name="migrations">
+        <exec command="php artisan migrate" dir="${current.dir}" passthru="true" />
     </target>
 
     <target name="switch">

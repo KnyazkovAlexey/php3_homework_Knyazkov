@@ -12,5 +12,7 @@
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('welcome', [
+        'siteDomain' => config('app_custom.site.domain'),
+    ]);
 });

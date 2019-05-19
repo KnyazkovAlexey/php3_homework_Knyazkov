@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="php3" default="build" basedir=".">
+
+    <target name="build" depends="vars, copy, configs, composer, switch"/>
+
+    <target name="vars">
+        <php returnProperty="current.time" function="date">
+            <param value="Y-m-d-H-i-s"/>
+        </php>
+        <property name="current.dir" value="${target.dir}/htdocs/${current.time}"/>
+    </target>
+
+    <target name="copy">
+        <mkdir dir="${current.dir}"/>
+        <copy todir="${current.dir}">
+            <fileset dir="${project.basedir}">
+                <include name="**"/>
+                <exclude name="vendor/**"/>
+            </fileset>
+        </copy>
+    </target>
+
+    <target name="configs">
+        <copy file="${current.dir}/build/production/assets/.env" todir="${current.dir}" overwrite="true">
+            <filterchain>
+                <replacetokens begintoken="{{" endtoken="}}">
+                    <token key="domain" value="${domain}"/>
+                </replacetokens>
+            </filterchain>
+        </copy>
+    </target>
+
+    <target name="composer">
+        <exec command="composer install" dir="${current.dir}" passthru="true"/>
+    </target>
+
+    <target name="switch">
+        <symlink target="${current.dir}" link="${target.dir}/htdocs/current" overwrite="true"/>
+    </target>
+</project>

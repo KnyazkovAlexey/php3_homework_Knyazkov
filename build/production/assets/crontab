@@ -1,0 +1,1 @@
+*/30 * * * * php {{project_dir}}/artisan send-visits-report >> {{project_dir}}/storage/logs/crontab.log

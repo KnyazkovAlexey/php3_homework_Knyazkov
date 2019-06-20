@@ -2,7 +2,7 @@
 
 <project name="php3" default="build" basedir=".">
 
-    <target name="build" depends="vars, copy, configs, composer, migrations, switch"/>
+    <target name="build" depends="vars, copy, configs, composer, migrations, cron, tests, switch"/>
 
     <target name="vars">
         <php returnProperty="current.time" function="date">
@@ -28,6 +28,8 @@
                     <token key="domain" value="${domain}"/>
                     <token key="db_username" value="${db.username}"/>
                     <token key="db_password" value="${db.password}"/>
+                    <token key="mail_address" value="${mail.address}"/>
+                    <token key="mail_password" value="${mail.password}"/>
                     <token key="admin_email" value="${admin.email}"/>
                     <token key="admin_password" value="${admin.password}"/>
                 </replacetokens>
@@ -41,6 +43,21 @@
 
     <target name="migrations">
         <exec command="php artisan migrate" dir="${current.dir}" passthru="true" />
+    </target>
+
+    <target name="cron">
+        <copy file="${current.dir}/build/production/assets/crontab" tofile="${current.dir}/crontab" overwrite="true">
+            <filterchain>
+                <replacetokens begintoken="{{" endtoken="}}">
+                    <token key="project_dir" value="${current.dir}" />
+                </replacetokens>
+            </filterchain>
+        </copy>
+        <exec command="crontab ${current.dir}/crontab"  dir="${current.dir}" passthru="true" />
+    </target>
+
+    <target name="tests">
+        <exec command="vendor/bin/phpunit" dir="${current.dir}" passthru="true" />
     </target>
 
     <target name="switch">

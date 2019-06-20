@@ -13,6 +13,8 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
  *
  * @property int id
  * @property string name
+ * @property string surname
+ * @property string patronymic
  * @property string email
  * @property string password
  *
@@ -30,7 +32,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password',
+        'name', 'surname', 'patronymic', 'email', 'password',
     ];
 
     /**
@@ -45,6 +47,22 @@ class User extends Authenticatable
     public function roles()
     {
         return $this->belongsToMany(Role::class, 'role_user');
+    }
+
+    /**
+     * Отображаемое имя пользователя
+     *
+     * @return string|null
+     */
+    public function getFullName()
+    {
+        if (! empty($this->name) && ! empty($this->patronymic) && ! empty($this->surname)) {
+            return implode(' ', [$this->name, $this->patronymic, $this->surname]);
+        } elseif (! empty($this->name) && ! empty($this->surname)) {
+            return implode(' ', [$this->name, $this->surname]);
+        } else {
+            return $this->email;
+        }
     }
 
     /**
